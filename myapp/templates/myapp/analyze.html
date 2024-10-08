@@ -1,44 +1,110 @@
-<!-- myapp/templates/myapp/analyze.html -->
 {% extends 'myapp/base.html' %}
 
 {% block title %}분석 결과{% endblock %}
 
-{% block content %}
-<div class="container py-5">
-    <h2 class="text-center mb-5">음성 분석 결과</h2>
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h3 class="card-title">음성 특성</h3>
-                    <p class="lead"><strong>음역대:</strong> {{ result.vocal_range }}</p>
-                    <p class="lead"><strong>목소리 특징:</strong> {{ result.voice_character }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h3 class="card-title">AI 분석 인사이트</h3>
-                    <p>당신의 목소리는 독특한 특성을 가지고 있습니다. 이러한 특성을 잘 살릴 수 있는 노래들을 추천해 드리겠습니다.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block extra_head %}
+<style>
+    .analyze-container {
+        min-height: 100vh;
+        padding: 8rem 0;
+    }
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .card-title {
+        color: var(--primary-color);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .card-body {
+        padding: 2rem;
+    }
+    .lead {
+        font-size: 1.1rem;
+        color: var(--text-color);
+    }
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+    }
+    .section-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 3rem 0;
+        text-align: center;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
 
-    <h3 class="text-center my-5">맞춤 노래 추천</h3>
-    <div class="row">
-        {% for song in result.recommended_songs %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">{{ song }}</h5>
-                    <p class="card-text">이 노래는 당신의 음역대와 목소리 특성에 잘 맞습니다.</p>
-                    <a href="#" class="btn btn-outline-primary">노래 듣기</a>
+{% block content %}
+<div class="analyze-container">
+    <div class="container">
+        <h2 class="hero-title">음성 분석 결과</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">음성 특성</h3>
+                        <p class="lead"><strong>음역대:</strong> {{ result.vocal_range }}</p>
+                        <p class="lead"><strong>목소리 특징:</strong> {{ result.voice_character }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">AI 분석 인사이트</h3>
+                        <p class="lead">당신의 목소리는 독특한 특성을 가지고 있습니다. 이러한 특성을 잘 살릴 수 있는 노래들을 추천해 드리겠습니다.</p>
+                    </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
+
+        <h3 class="section-title">맞춤 노래 추천</h3>
+        <div class="row">
+            {% for song in result.recommended_songs %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ song }}</h5>
+                        <p class="lead">이 노래는 당신의 음역대와 목소리 특성에 잘 맞습니다.</p>
+                        <a href="{% url 'recommend' %}" class="btn btn-outline-primary mt-3">어떤 키로 부를까?</a>                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}

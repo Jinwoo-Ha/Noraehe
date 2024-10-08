@@ -48,3 +48,19 @@ def recommend(request):
         }
         return render(request, 'myapp/recommend.html', {'song_info': song_info})
     return render(request, 'myapp/recommend.html')
+
+
+def mypage(request):
+    # 임시 데이터 (실제로는 데이터베이스에서 가져와야 함)
+    voice_analyses = [
+        {'date': '2024-03-15', 'vocal_range': 'A2 - C5', 'voice_character': '맑고 부드러운 음색'},
+        {'date': '2024-03-10', 'vocal_range': 'G2 - B4', 'voice_character': '파워풀한 음색'},
+    ]
+    song_searches = [
+        {'title': '노래 제목 1', 'artist': '가수 1', 'date': '2024-03-14'},
+        {'title': '노래 제목 2', 'artist': '가수 2', 'date': '2024-03-13'},
+    ]
+    return render(request, 'myapp/mypage.html', {
+        'voice_analyses': voice_analyses,
+        'song_searches': song_searches
+    })

@@ -1,0 +1,136 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}마이페이지{% endblock %}
+
+{% block extra_head %}
+<style>
+    .recommend-container {
+        min-height: 100vh;
+        padding: 6rem 0;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .card-title {
+        color: var(--primary-color);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    .profile-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent-color);
+    }
+    .record-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .record-item {
+        background-color: rgba(255, 255, 255, 0.03);
+        border: none;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+    .record-item h5 {
+        color: var(--accent-color);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    .record-item p {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recommend-container">
+    <div class="container">
+        <h2 class="text-center mb-5 hero-title">마이페이지</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="https://via.placeholder.com/150" alt="프로필 이미지" class="profile-image mb-3">
+                        <h3 class="card-title">사용자 이름</h3>
+                        <p>음악 애호가</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">나의 통계</h4>
+                        <p><strong>총 분석 횟수:</strong> {{ voice_analyses|length }}</p>
+                        <p><strong>총 노래 검색:</strong> {{ song_searches|length }}</p>
+                        <p><strong>가입일:</strong> 2024년 1월 1일</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">음성 분석 기록</h3>
+                        <div class="record-list">
+                            {% if voice_analyses %}
+                                {% for analysis in voice_analyses %}
+                                    <div class="record-item">
+                                        <h5>{{ analysis.date }}</h5>
+                                        <p><strong>음역대:</strong> {{ analysis.vocal_range }}</p>
+                                        <p><strong>음색 특징:</strong> {{ analysis.voice_character }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>아직 음성 분석 기록이 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">노래 검색 기록</h3>
+                        <div class="record-list">
+                            {% if song_searches %}
+                                {% for search in song_searches %}
+                                    <div class="record-item">
+                                        <h5>{{ search.title }}</h5>
+                                        <p><strong>아티스트:</strong> {{ search.artist }}</p>
+                                        <p><strong>검색 날짜:</strong> {{ search.date }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>아직 노래 검색 기록이 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

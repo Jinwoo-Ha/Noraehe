@@ -6,14 +6,14 @@
 <style>
     .recommend-container {
         min-height: 100vh;
-        padding: 6rem 0;  /* 상단 패딩 증가 */
+        padding: 6rem 0;
     }
     .search-card, .result-card, .popular-songs-card {
         background-color: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
-        margin-bottom: 2rem;  /* 카드 사이 간격 추가 */
+        margin-bottom: 2rem;
     }
     .search-card:hover, .result-card:hover, .popular-songs-card:hover {
         transform: translateY(-5px);
@@ -90,34 +90,6 @@
                     </div>
                 </div>
 
-                <div class="card popular-songs-card">
-                    <div class="card-body p-4">
-                        <h3 class="card-title mb-4">다른 사람들이 관심있는 노래</h3>
-                        <ul class="popular-songs-list">
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">Dynamite</div>
-                                <div class="popular-song-artist">BTS</div>
-                            </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">좋니</div>
-                                <div class="popular-song-artist">윤종신</div>
-                            </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">신호등</div>
-                                <div class="popular-song-artist">이무진</div>
-                            </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">Blueming</div>
-                                <div class="popular-song-artist">아이유(IU)</div>
-                            </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">밤편지</div>
-                                <div class="popular-song-artist">아이유(IU)</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
                 {% if song_info %}
                 <div class="card result-card">
                     <div class="card-body p-4">
@@ -149,6 +121,34 @@
                     </div>
                 </div>
                 {% endif %}
+
+                <div class="card popular-songs-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">다른 사람들이 관심있는 노래</h3>
+                        <ul class="popular-songs-list">
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">Dynamite</div>
+                                <div class="popular-song-artist">BTS</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">좋니</div>
+                                <div class="popular-song-artist">윤종신</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">신호등</div>
+                                <div class="popular-song-artist">이무진</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">Blueming</div>
+                                <div class="popular-song-artist">아이유(IU)</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">밤편지</div>
+                                <div class="popular-song-artist">아이유(IU)</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
