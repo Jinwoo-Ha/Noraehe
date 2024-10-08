@@ -1,0 +1,203 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}홈{% endblock %}
+
+{% block content %}
+<section class="hero-section text-center text-light">
+    <div class="container hero-content">
+        <h1 class="hero-title">AI로 당신의 목소리를 분석하고<br>최적의 노래를 찾아드립니다</h1>
+        <p class="hero-subtitle">Noraehe의 첨단 AI 기술로 당신의 음악 경험을 혁신하세요</p>
+        <a href="#voice-analysis" class="btn btn-primary btn-lg">시작하기</a>
+    </div>
+</section>
+
+<section id="features" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 hero-title">Noraehe의 특징</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-microphone feature-icon"></i>
+                        <h5 class="card-title mb-3">정확한 음성 분석</h5>
+                        <p class="card-text">최신 AI 기술을 활용하여 당신의 목소리를 정밀하게 분석합니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-music feature-icon"></i>
+                        <h5 class="card-title mb-3">맞춤형 노래 추천</h5>
+                        <p class="card-text">분석 결과를 바탕으로 당신에게 가장 적합한 노래를 추천합니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cogs feature-icon"></i>
+                        <h5 class="card-title mb-3">지속적인 학습</h5>
+                        <p class="card-text">AI 모델이 지속적으로 학습하여 더욱 정확한 결과를 제공합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="voice-analysis" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 hero-title">음성 분석 시작하기</h2>
+        <div class="card">
+            <div class="card-body text-center p-5">
+                <p class="card-text mb-4">버튼을 클릭하여 음성 녹음을 시작하세요.</p>
+                <div id="controls">
+                    <button id="recordButton" class="btn btn-primary btn-lg">
+                        <i class="fas fa-microphone me-2"></i>녹음 시작
+                    </button>
+                    <button id="stopButton" class="btn btn-danger btn-lg d-none">
+                        <i class="fas fa-stop me-2"></i>녹음 중지
+                    </button>
+                </div>
+                <div id="recordingStatus" class="mt-4 d-none">
+                    <p class="text-primary">녹음 중... <span id="recordingTime" class="badge bg-primary">00:00</span></p>
+                </div>
+                <div id="audioPlayback" class="mt-4 d-none">
+                    <audio id="audioPlayer" controls class="w-100"></audio>
+                </div>
+                <button id="analyzeButton" class="btn btn-outline-primary btn-lg mt-4 d-none">
+                    <i class="fas fa-chart-bar me-2"></i>음성 분석하기
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js"></script>
+<script>
+let recorder;
+let audio;
+let recordingTimer;
+let recordingTime = 0;
+
+document.getElementById('recordButton').addEventListener('click', startRecording);
+document.getElementById('stopButton').addEventListener('click', stopRecording);
+document.getElementById('analyzeButton').addEventListener('click', analyzeVoice);
+
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({audio: true})
+        .then(function(stream) {
+            recorder = RecordRTC(stream, {
+                type: 'audio',
+                mimeType: 'audio/webm'
+            });
+            recorder.startRecording();
+            
+            document.getElementById('recordButton').classList.add('d-none');
+            document.getElementById('stopButton').classList.remove('d-none');
+            document.getElementById('recordingStatus').classList.remove('d-none');
+            
+            recordingTimer = setInterval(updateRecordingTime, 1000);
+        });
+}
+
+function stopRecording() {
+    recorder.stopRecording(function() {
+        audio = recorder.getBlob();
+        document.getElementById('audioPlayer').src = URL.createObjectURL(audio);
+        
+        document.getElementById('stopButton').classList.add('d-none');
+        document.getElementById('recordingStatus').classList.add('d-none');
+        document.getElementById('audioPlayback').classList.remove('d-none');
+        document.getElementById('analyzeButton').classList.remove('d-none');
+        
+        clearInterval(recordingTimer);
+    });
+}
+
+function analyzeVoice() {
+    let formData = new FormData();
+    formData.append('audio_data', audio, 'recorded_audio.webm');
+    
+    fetch("{% url 'loading' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': "{{ csrf_token }}"
+        }
+    }).then(response => {
+        if (response.ok) {
+            window.location.href = "{% url 'loading' %}";
+        }
+    });
+}
+
+function updateRecordingTime() {
+    recordingTime++;
+    let minutes = Math.floor(recordingTime / 60);
+    let seconds = recordingTime % 60;
+    document.getElementById('recordingTime').textContent = 
+        (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
+
+// 스크롤 애니메이션
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// 네비게이션 바 스크롤 효과
+window.addEventListener('scroll', function() {
+    var navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.style.padding = '0.5rem 1rem';
+        navbar.style.backgroundColor = 'rgba(10, 10, 31, 0.9)';
+    } else {
+        navbar.style.padding = '1rem 1rem';
+        navbar.style.backgroundColor = 'rgba(10, 10, 31, 0.8)';
+    }
+});
+
+// 페이지 로드 애니메이션
+window.addEventListener('load', function() {
+    document.body.classList.add('loaded');
+});
+</script>
+
+<style>
+    /* 페이지 로드 애니메이션 */
+    body {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    body.loaded {
+        opacity: 1;
+    }
+
+    /* 카드 호버 효과 */
+    .card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    /* 버튼 호버 효과 */
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    }
+</style>
+{% endblock %}

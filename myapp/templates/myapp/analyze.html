@@ -1,0 +1,44 @@
+<!-- myapp/templates/myapp/analyze.html -->
+{% extends 'myapp/base.html' %}
+
+{% block title %}분석 결과{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-5">음성 분석 결과</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">음성 특성</h3>
+                    <p class="lead"><strong>음역대:</strong> {{ result.vocal_range }}</p>
+                    <p class="lead"><strong>목소리 특징:</strong> {{ result.voice_character }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">AI 분석 인사이트</h3>
+                    <p>당신의 목소리는 독특한 특성을 가지고 있습니다. 이러한 특성을 잘 살릴 수 있는 노래들을 추천해 드리겠습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="text-center my-5">맞춤 노래 추천</h3>
+    <div class="row">
+        {% for song in result.recommended_songs %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ song }}</h5>
+                    <p class="card-text">이 노래는 당신의 음역대와 목소리 특성에 잘 맞습니다.</p>
+                    <a href="#" class="btn btn-outline-primary">노래 듣기</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

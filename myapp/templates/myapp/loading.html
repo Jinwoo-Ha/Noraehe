@@ -1,0 +1,109 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}음성 분석 중{% endblock %}
+
+{% block extra_head %}
+<style>
+    .loading-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .loading-card {
+        max-width: 500px;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .card-title {
+        color: var(--primary-color);
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .progress-bar {
+        background-color: var(--primary-color);
+    }
+    .loading-message {
+        font-size: 1.1rem;
+        margin-top: 1rem;
+    }
+    .loading-tips {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-container">
+    <div class="card loading-card">
+        <div class="card-body text-center p-5">
+            <h2 class="card-title mb-4">음성 분석 중</h2>
+            <div class="progress mb-4">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p id="loadingMessage" class="loading-message">AI가 당신의 음성을 분석하고 있습니다. 잠시만 기다려 주세요.</p>
+            <div class="spinner-border text-primary mt-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="loading-tips">
+                <p>알고 계셨나요?</p>
+                <ul class="list-unstyled">
+                    <li>음성 분석은 당신의 목소리 특성을 정확히 파악합니다.</li>
+                    <li>AI는 수천 개의 음악 데이터를 비교 분석합니다.</li>
+                    <li>분석 결과를 바탕으로 맞춤형 노래를 추천해 드립니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.getElementById('progressBar');
+    const loadingMessage = document.getElementById('loadingMessage');
+    let progress = 0;
+    
+    const messages = [
+        "음성 파형을 분석 중입니다...",
+        "음역대를 파악하고 있습니다...",
+        "음색 특성을 추출하고 있습니다...",
+        "최적의 노래를 검색 중입니다...",
+        "맞춤형 추천 목록을 생성하고 있습니다..."
+    ];
+    
+    function updateProgress() {
+        progress += 2;
+        progressBar.style.width = progress + '%';
+        progressBar.setAttribute('aria-valuenow', progress);
+        
+        if (progress < 100) {
+            if (progress % 20 === 0) {
+                loadingMessage.textContent = messages[Math.floor(progress / 20)];
+            }
+            setTimeout(updateProgress, 100);
+        } else {
+            loadingMessage.textContent = '분석이 완료되었습니다. 결과 페이지로 이동합니다...';
+            setTimeout(() => {
+                window.location.href = "{% url 'analyze' %}";
+            }, 1500);
+        }
+    }
+    
+    updateProgress();
+});
+</script>
+{% endblock %}

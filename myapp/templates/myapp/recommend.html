@@ -1,0 +1,202 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}맞춤 노래 추천{% endblock %}
+
+{% block extra_head %}
+<style>
+    .recommend-container {
+        min-height: 100vh;
+        padding: 6rem 0;  /* 상단 패딩 증가 */
+    }
+    .search-card, .result-card, .popular-songs-card {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;  /* 카드 사이 간격 추가 */
+    }
+    .search-card:hover, .result-card:hover, .popular-songs-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    .card-title {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .progress-bar {
+        background-color: var(--primary-color);
+    }
+    .compatibility-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    .recommendation-reason {
+        font-style: italic;
+        opacity: 0.9;
+    }
+    .song-info-label {
+        color: var(--accent-color);
+        font-weight: 600;
+    }
+    .popular-songs-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .popular-song-item {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: background-color 0.3s ease;
+    }
+    .popular-song-item:last-child {
+        border-bottom: none;
+    }
+    .popular-song-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    .popular-song-title {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    .popular-song-artist {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recommend-container">
+    <div class="container">
+        <h2 class="text-center mb-5 hero-title">맞춤 노래 추천</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card search-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">노래 검색</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="song_title" name="song_title" placeholder="노래 제목을 입력하세요" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>검색
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card popular-songs-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">다른 사람들이 관심있는 노래</h3>
+                        <ul class="popular-songs-list">
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">Dynamite</div>
+                                <div class="popular-song-artist">BTS</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">좋니</div>
+                                <div class="popular-song-artist">윤종신</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">신호등</div>
+                                <div class="popular-song-artist">이무진</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">Blueming</div>
+                                <div class="popular-song-artist">아이유(IU)</div>
+                            </li>
+                            <li class="popular-song-item">
+                                <div class="popular-song-title">밤편지</div>
+                                <div class="popular-song-artist">아이유(IU)</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                {% if song_info %}
+                <div class="card result-card">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">노래 정보</h3>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p><span class="song-info-label">제목:</span> {{ song_info.title }}</p>
+                                <p><span class="song-info-label">가수:</span> {{ song_info.artist }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><span class="song-info-label">원곡 키:</span> {{ song_info.original_key }}</p>
+                                <p><span class="song-info-label">추천 키:</span> {{ song_info.recommended_key }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="mb-3">AI 분석 결과</h4>
+                            <p class="compatibility-text">이 노래는 당신의 음역대에 <span id="compatibilityText" class="text-primary"></span>% 적합합니다.</p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: 0%;" 
+                                     data-compatibility="{{ song_info.compatibility }}"
+                                     aria-valuenow="{{ song_info.compatibility }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                            <p class="recommendation-reason mt-3">{{ song_info.recommendation_reason }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        const compatibility = progressBar.getAttribute('data-compatibility');
+        const compatibilityText = document.getElementById('compatibilityText');
+        if (compatibilityText) {
+            compatibilityText.textContent = '0';
+        }
+
+        // Add animation to the progress bar and compatibility text
+        setTimeout(() => {
+            progressBar.style.transition = 'width 1.5s ease-in-out';
+            progressBar.style.width = compatibility + '%';
+            
+            let currentValue = 0;
+            const duration = 1500; // 1.5 seconds
+            const interval = 20; // Update every 20ms
+            const increment = compatibility / (duration / interval);
+            
+            const updateCounter = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= compatibility) {
+                    currentValue = compatibility;
+                    clearInterval(updateCounter);
+                }
+                compatibilityText.textContent = Math.round(currentValue);
+            }, interval);
+        }, 300);
+    }
+
+    // Add hover effect to the cards
+    const cards = document.querySelectorAll('.search-card, .result-card, .popular-songs-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
