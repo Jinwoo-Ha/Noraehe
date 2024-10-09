@@ -132,6 +132,29 @@
             padding: 2rem 0;
             margin-top: 5rem;
         }
+        /* Navbar 세로바 스타일 */
+        .navbar-nav .nav-item.separator {
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.3);
+            margin: 0 15px;
+            align-self: center;
+            height: 1rem; /* 세로바의 높이를 조정 */
+        }
+        
+        /* 모바일 화면에서 세로바 숨기기 */
+        @media (max-width: 991px) {
+            .navbar-nav .nav-item.separator {
+                display: none;
+            }
+        }
+        .navbar-nav {
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -146,12 +169,14 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">목소리 분석</a>
                     </li>
+                    <li class="nav-item separator"></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'recommend' %}">노래 추천</a>
+                    </li>
+                    <li class="nav-item separator"></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'mypage' %}">마이페이지</a>
                     </li>
