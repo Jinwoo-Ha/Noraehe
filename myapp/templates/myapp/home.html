@@ -3,18 +3,30 @@
 {% block title %}홈{% endblock %}
 
 {% block content %}
-<section class="hero-section text-center text-light">
+<section class="hero-section text-center text-light d-flex flex-column justify-content-center">
     <div class="container hero-content">
-        <h1 class="hero-title">AI로 당신의 목소리를 분석하고<br>최적의 노래를 찾아드립니다</h1>
-        <p class="hero-subtitle">Noraehe의 첨단 AI 기술로 당신의 음악 경험을 혁신하세요</p>
-        <a href="#voice-analysis" class="btn btn-primary btn-lg">시작하기</a>
-    </div>
-</section>
-
-<section id="features" class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 hero-title">Noraehe의 특징</h2>
-        <div class="row">
+        <h1 class="hero-title mb-4">AI로 당신의 목소리를 분석하고<br>최적의 노래를 찾아드립니다</h1>
+        <p class="hero-subtitle mb-5">Noraehe의 첨단 AI 기술로 당신의 음악 경험을 혁신하세요</p>
+        <div id="controls" class="mb-4">
+            <button id="recordButton" class="btn btn-primary btn-lg">
+                <i class="fas fa-microphone me-2"></i>녹음 시작
+            </button>
+            <button id="stopButton" class="btn btn-danger btn-lg d-none">
+                <i class="fas fa-stop me-2"></i>녹음 중지
+            </button>
+        </div>
+        <div id="recordingStatus" class="mt-4 d-none">
+            <p class="text-primary">녹음 중... <span id="recordingTime" class="badge bg-primary">00:00</span></p>
+        </div>
+        <div id="audioPlayback" class="mt-4 d-none">
+            <audio id="audioPlayer" controls class="w-100"></audio>
+        </div>
+        <button id="analyzeButton" class="btn btn-outline-primary btn-lg mt-4 d-none">
+            <i class="fas fa-chart-bar me-2"></i>음성 분석하기
+        </button>
+        
+        <!-- 카드 섹션 -->
+        <div class="row mt-5">
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
@@ -41,34 +53,6 @@
                         <p class="card-text">AI 모델이 지속적으로 학습하여 더욱 정확한 결과를 제공합니다.</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="voice-analysis" class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 hero-title">음성 분석 시작하기</h2>
-        <div class="card">
-            <div class="card-body text-center p-5">
-                <p class="card-text mb-4">버튼을 클릭하여 음성 녹음을 시작하세요.</p>
-                <div id="controls">
-                    <button id="recordButton" class="btn btn-primary btn-lg">
-                        <i class="fas fa-microphone me-2"></i>녹음 시작
-                    </button>
-                    <button id="stopButton" class="btn btn-danger btn-lg d-none">
-                        <i class="fas fa-stop me-2"></i>녹음 중지
-                    </button>
-                </div>
-                <div id="recordingStatus" class="mt-4 d-none">
-                    <p class="text-primary">녹음 중... <span id="recordingTime" class="badge bg-primary">00:00</span></p>
-                </div>
-                <div id="audioPlayback" class="mt-4 d-none">
-                    <audio id="audioPlayer" controls class="w-100"></audio>
-                </div>
-                <button id="analyzeButton" class="btn btn-outline-primary btn-lg mt-4 d-none">
-                    <i class="fas fa-chart-bar me-2"></i>음성 분석하기
-                </button>
             </div>
         </div>
     </div>
@@ -143,17 +127,6 @@ function updateRecordingTime() {
         (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
 
-// 스크롤 애니메이션
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-});
-
 // 네비게이션 바 스크롤 효과
 window.addEventListener('scroll', function() {
     var navbar = document.querySelector('.navbar');
@@ -182,9 +155,33 @@ window.addEventListener('load', function() {
         opacity: 1;
     }
 
-    /* 카드 호버 효과 */
+    /* 히어로 섹션 전체 화면 설정 */
+    .hero-section {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        padding: 300px 0; /* 네비게이션 바 높이를 고려한 상단 패딩 */
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    #controls .btn {
+        font-size: 1.2rem;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* 카드 스타일 */
     .card {
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: none;
     }
     .card:hover {
         transform: translateY(-10px);
@@ -198,6 +195,13 @@ window.addEventListener('load', function() {
     .btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    /* 특징 아이콘 스타일 */
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
     }
 </style>
 {% endblock %}

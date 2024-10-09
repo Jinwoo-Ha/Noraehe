@@ -59,11 +59,15 @@
         color: var(--text-color);
     }
     .section-title {
-        font-size: 2rem;
-        font-weight: 600;
+        font-size: 3rem;
+        font-weight: 700;
         margin: 3rem 0;
         text-align: center;
-        color: var(--primary-color);
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 </style>
 {% endblock %}
