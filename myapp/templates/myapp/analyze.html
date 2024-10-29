@@ -1,6 +1,6 @@
 {% extends 'myapp/base.html' %}
 
-{% block title %}분석 결과{% endblock %}
+{% block title %}음성 분석 결과{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -48,26 +48,107 @@
     .lead {
         font-size: 1.1rem;
         color: var(--text-color);
+        margin: 0;
     }
     .btn-outline-primary {
         color: var(--primary-color);
         border-color: var(--primary-color);
         transition: all 0.3s ease;
+        white-space: nowrap;
     }
     .btn-outline-primary:hover {
         background-color: var(--primary-color);
         color: var(--text-color);
     }
-    .section-title {
-        font-size: 3rem;
-        font-weight: 700;
-        margin: 3rem 0;
-        text-align: center;
-        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .recommendation-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .song-info {
+        flex-grow: 1;
+        margin-right: 1rem;
+    }
+
+    /* 노래 검색 섹션 스타일 */
+    .song-search-section {
+        margin-top: 2rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    
+    .search-title {
+        color: var(--primary-color);
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+    
+    .search-form {
+        margin-bottom: 2rem;
+    }
+    
+    .search-input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--text-color);
+        padding: 0.8rem;
+        border-radius: 8px;
+        width: 100%;
+    }
+    
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .search-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+    }
+
+    /* 검색 결과 스타일 */
+    .result-info {
+        margin: 2rem 0;
+        padding: 2rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+    }
+    
+    .result-label {
+        color: var(--accent-color);
+        font-weight: 600;
+        margin-right: 1rem;
+    }
+    
+    .compatibility-section {
+        margin-top: 2rem;
+    }
+    
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        margin: 1rem 0;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 5px;
+        transition: width 1.5s ease-in-out;
     }
 </style>
 {% endblock %}
@@ -89,26 +170,138 @@
             <div class="col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h3 class="card-title">AI 분석 인사이트</h3>
-                        <p class="lead">당신의 목소리는 독특한 특성을 가지고 있습니다. 이러한 특성을 잘 살릴 수 있는 노래들을 추천해 드리겠습니다.</p>
+                        <h3 class="card-title">맞춤 노래 추천</h3>
+                        {% for song in result.recommended_songs %}
+                        <div class="recommendation-item">
+                            <div class="song-info">
+                                <p class="lead">{{ song.title }} {{ song.artist }}</p>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm song-key-btn" 
+                                    data-title="{{ song.title }}"
+                                    data-artist="{{ song.artist }}">
+                                어떤 키로 부를까?
+                            </button>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
 
-        <h3 class="section-title">맞춤 노래 추천</h3>
-        <div class="row">
-            {% for song in result.recommended_songs %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ song }}</h5>
-                        <p class="lead">이 노래는 당신의 음역대와 목소리 특성에 잘 맞습니다.</p>
-                        <a href="{% url 'recommend' %}" class="btn btn-outline-primary mt-3">어떤 키로 부를까?</a>                    </div>
+        <h2 class="hero-title" style="margin-top: 3rem;">최애곡 노래방키 찾기</h2>
+        <div class="song-search-section">
+            <h3 class="search-title">노래 검색</h3>
+            <form class="search-form" id="songSearchForm" method="post">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <input type="text" class="search-input form-control" 
+                           id="songTitle" name="song_title" 
+                           placeholder="노래 제목을 입력하세요" required>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search me-2"></i>검색
+                    </button>
+                </div>
+            </form>
+
+            <div id="searchResult" style="display: none;">
+                <div class="result-info">
+                    <h4>노래 정보</h4>
+                    <div class="mt-3">
+                        <span class="result-label">제목:</span>
+                        <span id="resultTitle"></span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="result-label">가수:</span>
+                        <span id="resultArtist"></span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="result-label">원곡 키:</span>
+                        <span id="resultOriginalKey"></span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="result-label">추천 키:</span>
+                        <span id="resultRecommendedKey"></span>
+                    </div>
+                    
+                    <div class="compatibility-section">
+                        <h4>AI 분석 결과</h4>
+                        <p>이 노래는 당신의 음역대에 <span id="compatibilityText">0</span>% 적합합니다.</p>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('songSearchForm');
+    const searchResult = document.getElementById('searchResult');
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const songTitle = document.getElementById('songTitle').value;
+        
+        // 실제로는 서버에 API 요청을 보내야 하지만, 예시로 더미 데이터를 사용
+        const dummyResponse = {
+            title: songTitle,
+            artist: "가수 이름",
+            original_key: "C",
+            recommended_key: "A",
+            compatibility: 85
+        };
+
+        // 검색 결과 표시
+        document.getElementById('resultTitle').textContent = dummyResponse.title;
+        document.getElementById('resultArtist').textContent = dummyResponse.artist;
+        document.getElementById('resultOriginalKey').textContent = dummyResponse.original_key;
+        document.getElementById('resultRecommendedKey').textContent = dummyResponse.recommended_key;
+
+        // 프로그레스 바 애니메이션
+        const progressBar = document.querySelector('.progress-bar');
+        const compatibilityText = document.getElementById('compatibilityText');
+        
+        progressBar.style.width = '0%';
+        compatibilityText.textContent = '0';
+        
+        searchResult.style.display = 'block';
+
+        setTimeout(() => {
+            progressBar.style.width = dummyResponse.compatibility + '%';
+            
+            let currentValue = 0;
+            const duration = 1500;
+            const interval = 20;
+            const increment = dummyResponse.compatibility / (duration / interval);
+            
+            const updateCounter = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= dummyResponse.compatibility) {
+                    currentValue = dummyResponse.compatibility;
+                    clearInterval(updateCounter);
+                }
+                compatibilityText.textContent = Math.round(currentValue);
+            }, interval);
+        }, 300);
+    });
+
+    // 키 추천 버튼 이벤트 핸들러
+    const keyButtons = document.querySelectorAll('.song-key-btn');
+    keyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const title = this.getAttribute('data-title');
+            const artist = this.getAttribute('data-artist');
+            
+            document.getElementById('songTitle').value = title;
+            searchForm.dispatchEvent(new Event('submit'));
+        });
+    });
+});
+</script>
 {% endblock %}

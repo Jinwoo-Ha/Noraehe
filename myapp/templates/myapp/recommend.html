@@ -27,9 +27,20 @@
     .progress {
         height: 10px;
         background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+        margin: 1rem 0;
+        overflow: hidden;
+        position: relative;
     }
     .progress-bar {
+        height: 100%;
         background-color: var(--primary-color);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        transition: width 1.5s ease-in-out;
+        border-radius: 5px;
     }
     .compatibility-text {
         font-size: 1.2rem;
@@ -72,13 +83,13 @@
 {% block content %}
 <div class="recommend-container">
     <div class="container">
-        <h2 class="text-center mb-5 hero-title">맞춤 노래 추천</h2>
+        <h2 class="text-center mb-5 hero-title">최애곡 노래방 키 검색</h2>
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card search-card">
                     <div class="card-body p-4">
                         <h3 class="card-title mb-4">노래 검색</h3>
-                        <form method="post">
+                        <form method="post" id="songSearchForm">
                             {% csrf_token %}
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" id="song_title" name="song_title" placeholder="노래 제목을 입력하세요" required>
@@ -90,37 +101,33 @@
                     </div>
                 </div>
 
-                {% if song_info %}
-                <div class="card result-card">
+                <div class="card result-card" id="searchResult" style="display: none;">
                     <div class="card-body p-4">
                         <h3 class="card-title mb-4">노래 정보</h3>
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <p><span class="song-info-label">제목:</span> {{ song_info.title }}</p>
-                                <p><span class="song-info-label">가수:</span> {{ song_info.artist }}</p>
+                                <p><span class="song-info-label">제목:</span> <span id="resultTitle"></span></p>
+                                <p><span class="song-info-label">가수:</span> <span id="resultArtist"></span></p>
                             </div>
                             <div class="col-md-6">
-                                <p><span class="song-info-label">원곡 키:</span> {{ song_info.original_key }}</p>
-                                <p><span class="song-info-label">추천 키:</span> {{ song_info.recommended_key }}</p>
+                                <p><span class="song-info-label">원곡 키:</span> <span id="resultOriginalKey"></span></p>
+                                <p><span class="song-info-label">추천 키:</span> <span id="resultRecommendedKey"></span></p>
                             </div>
                         </div>
                         <div class="mt-4">
                             <h4 class="mb-3">AI 분석 결과</h4>
-                            <p class="compatibility-text">이 노래는 당신의 음역대에 <span id="compatibilityText" class="text-primary"></span>% 적합합니다.</p>
+                            <p class="compatibility-text">이 노래는 당신의 음역대에 <span id="compatibilityText" class="text-primary">0</span>% 적합합니다.</p>
                             <div class="progress mb-3">
                                 <div class="progress-bar" role="progressbar" 
                                      style="width: 0%;" 
-                                     data-compatibility="{{ song_info.compatibility }}"
-                                     aria-valuenow="{{ song_info.compatibility }}" 
                                      aria-valuemin="0" 
                                      aria-valuemax="100">
                                 </div>
                             </div>
-                            <p class="recommendation-reason mt-3">{{ song_info.recommendation_reason }}</p>
+                            <p class="recommendation-reason mt-3" id="resultReason"></p>
                         </div>
                     </div>
                 </div>
-                {% endif %}
 
                 <div class="card popular-songs-card">
                     <div class="card-body p-4">
@@ -138,14 +145,6 @@
                                 <div class="popular-song-title">신호등</div>
                                 <div class="popular-song-artist">이무진</div>
                             </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">Blueming</div>
-                                <div class="popular-song-artist">아이유(IU)</div>
-                            </li>
-                            <li class="popular-song-item">
-                                <div class="popular-song-title">밤편지</div>
-                                <div class="popular-song-artist">아이유(IU)</div>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -158,36 +157,64 @@
 {% block extra_scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
-        const compatibility = progressBar.getAttribute('data-compatibility');
-        const compatibilityText = document.getElementById('compatibilityText');
-        if (compatibilityText) {
-            compatibilityText.textContent = '0';
-        }
+    const searchForm = document.getElementById('songSearchForm');
+    const searchResult = document.getElementById('searchResult');
+    
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const songTitle = document.getElementById('song_title').value;
+        
+        // 더미 데이터 (실제로는 서버에서 받아올 데이터)
+        const dummyResponse = {
+            title: songTitle,
+            artist: "가수 이름",
+            original_key: "C",
+            recommended_key: "A",
+            compatibility: 85,
+            reason: "당신의 음색과 음역대가 이 곡과 잘 맞습니다."
+        };
 
-        // Add animation to the progress bar and compatibility text
+        // 결과 표시
+        document.getElementById('resultTitle').textContent = dummyResponse.title;
+        document.getElementById('resultArtist').textContent = dummyResponse.artist;
+        document.getElementById('resultOriginalKey').textContent = dummyResponse.original_key;
+        document.getElementById('resultRecommendedKey').textContent = dummyResponse.recommended_key;
+        document.getElementById('resultReason').textContent = dummyResponse.reason;
+        
+        // 프로그레스 바 초기화
+        const progressBar = document.querySelector('.progress-bar');
+        const compatibilityText = document.getElementById('compatibilityText');
+        
+        progressBar.style.width = '0%';
+        compatibilityText.textContent = '0';
+        
+        // 검색 결과 표시
+        searchResult.style.display = 'block';
+
+        // 애니메이션 시작
         setTimeout(() => {
-            progressBar.style.transition = 'width 1.5s ease-in-out';
-            progressBar.style.width = compatibility + '%';
+            // 프로그레스 바 애니메이션
+            progressBar.style.width = dummyResponse.compatibility + '%';
             
+            // 숫자 카운팅 애니메이션
             let currentValue = 0;
-            const duration = 1500; // 1.5 seconds
-            const interval = 20; // Update every 20ms
-            const increment = compatibility / (duration / interval);
+            const duration = 1500; // 1.5초
+            const interval = 20; // 20ms마다 업데이트
+            const increment = dummyResponse.compatibility / (duration / interval);
             
             const updateCounter = setInterval(() => {
                 currentValue += increment;
-                if (currentValue >= compatibility) {
-                    currentValue = compatibility;
+                if (currentValue >= dummyResponse.compatibility) {
+                    currentValue = dummyResponse.compatibility;
                     clearInterval(updateCounter);
                 }
                 compatibilityText.textContent = Math.round(currentValue);
             }, interval);
         }, 300);
-    }
+    });
 
-    // Add hover effect to the cards
+    // 카드 호버 효과
     const cards = document.querySelectorAll('.search-card, .result-card, .popular-songs-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', function() {
