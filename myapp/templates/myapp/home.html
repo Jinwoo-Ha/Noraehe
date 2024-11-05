@@ -5,52 +5,124 @@
 {% block content %}
 <section class="hero-section text-center text-light d-flex flex-column justify-content-center">
     <div class="container hero-content">
-        <h1 class="hero-title mb-4">AI로 당신의 목소리를 분석하고<br>최적의 노래를 찾아드립니다</h1>
-        <p class="hero-subtitle mb-5">Noraehe의 첨단 AI 기술로 당신의 음악 경험을 혁신하세요</p>
-        <div id="controls" class="mb-4">
-            <button id="recordButton" class="btn btn-primary btn-lg">
-                <i class="fas fa-microphone me-2"></i>녹음 시작
-            </button>
-            <button id="stopButton" class="btn btn-danger btn-lg d-none">
-                <i class="fas fa-stop me-2"></i>녹음 중지
-            </button>
-        </div>
-        <div id="recordingStatus" class="mt-4 d-none">
-            <p class="text-primary">녹음 중... <span id="recordingTime" class="badge bg-primary">00:00</span></p>
-        </div>
-        <div id="audioPlayback" class="mt-4 d-none">
-            <audio id="audioPlayer" controls class="w-100"></audio>
-        </div>
-        <button id="analyzeButton" class="btn btn-outline-primary btn-lg mt-4 d-none">
-            <i class="fas fa-chart-bar me-2"></i>음성 분석하기
-        </button>
+        <h1 class="hero-title mb-4">노래방 KEY 딱 알려드림</h1>
+        <p class="hero-subtitle mb-5">30초만에 내 음역대 확인하고 노래방 맞춤키 추천받자!</p>
         
         <!-- 카드 섹션 -->
         <div class="row mt-5">
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="fas fa-microphone feature-icon"></i>
-                        <h5 class="card-title mb-3">정밀한 음성 분석</h5>
-                        <p class="card-text">최신 AI 기술로 당신의 음역대와 음색을 분석해요</p>
+                        <i class="fas fa-arrow-down feature-icon"></i>
+                        <h5 class="card-title mb-3">내 최저음 찾기</h5>
+                        <p class="card-text mb-4">영상을 따라해보고 최저음을 입력! (ex. E1)</p>
+                        
+                        <!-- 최저음 입력 -->
+                        <div class="note-input mb-4">
+                            <input type="text" 
+                                   class="form-control form-control-lg text-center" 
+                                   id="lowestNote"
+                                   placeholder="최저음을 입력하세요"
+                                   maxlength="2">
+                            <div id="lowestNoteError" class="invalid-feedback">
+                                올바른 음을 입력해주세요 (E1-G4)
+                            </div>
+                        </div>
+                        
+                        <div class="video-container">
+                            <iframe width="100%" height="315" 
+                                src="https://www.youtube.com/embed/abLCxB7WdaQ?si=Te3YT1_GUEyRvYUN&amp;controls=0&amp;start=17&amp;end=50" 
+                                title="YouTube video player" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-arrow-up feature-icon"></i>
+                        <h5 class="card-title mb-3">내 최고음 찾기</h5>
+                        <p class="card-text mb-4">영상을 따라해보고 최고음을 입력! (ex. C4)</p>
+                        
+                        <!-- 최고음 입력 -->
+                        <div class="note-input mb-4">
+                            <input type="text" 
+                                   class="form-control form-control-lg text-center" 
+                                   id="highestNote"
+                                   placeholder="최고음을 입력하세요"
+                                   maxlength="2">
+                            <div id="highestNoteError" class="invalid-feedback">
+                                올바른 음을 입력해주세요 (C4-E7)
+                            </div>
+                        </div>
+                        
+                        <div class="video-container">
+                            <iframe width="100%" height="315" 
+                                src="https://www.youtube.com/embed/abLCxB7WdaQ?si=Te3YT1_GUEyRvYUN&amp;controls=0&amp;start=73&amp;end=105" 
+                                title="YouTube video player" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 노래 검색 카드 추가 -->
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-music feature-icon"></i>
-                        <h5 class="card-title mb-3">맞춤형 노래 추천</h5>
-                        <p class="card-text">당신의 목소리에 어울리는 노래를 추천해요</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-cogs feature-icon"></i>
-                        <h5 class="card-title mb-3">노래방 키 추천</h5>
-                        <p class="card-text">노래를 검색하면 부르기에 적합한 키를 추천해줘요</p>
+                        <h5 class="card-title mb-3">노래방 키 찾기</h5>
+                        <p class="card-text mb-4">노래제목 입력 후 노래방 키 확인! (ex. 밤편지)</p>
+                        
+                        <!-- 노래 검색 폼 -->
+                        <form class="search-form mb-4" id="songSearchForm" method="post">
+                            {% csrf_token %}
+                            <div class="note-input mb-3">
+                                <input type="text" 
+                                       class="form-control form-control-lg text-center"
+                                       id="songTitle" 
+                                       name="song_title"
+                                       placeholder="노래 제목을 입력하세요">
+                            </div>
+                        </form>
+
+                        <!-- 검색 결과 -->
+                        <div id="searchResult" class="text-start" style="display: none;">
+                            <div class="result-info">
+                                <div class="mb-2">
+                                    <span class="result-label">제목:</span>
+                                    <span id="resultTitle"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="result-label">가수:</span>
+                                    <span id="resultArtist"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="result-label">원곡 키:</span>
+                                    <span id="resultOriginalKey"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="result-label">추천 키 조정:</span>
+                                    <span id="resultRecommendedKey"></span>
+                                </div>
+                                
+                                <div class="compatibility-section">
+                                    <p class="mb-2">노래 적합도</p>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <p class="text-center mt-2"><span id="compatibilityText">0</span>%</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -60,73 +132,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js"></script>
 <script>
-let recorder;
-let audio;
-let recordingTimer;
-let recordingTime = 0;
-
-document.getElementById('recordButton').addEventListener('click', startRecording);
-document.getElementById('stopButton').addEventListener('click', stopRecording);
-document.getElementById('analyzeButton').addEventListener('click', analyzeVoice);
-
-function startRecording() {
-    navigator.mediaDevices.getUserMedia({audio: true})
-        .then(function(stream) {
-            recorder = RecordRTC(stream, {
-                type: 'audio',
-                mimeType: 'audio/webm'
-            });
-            recorder.startRecording();
-            
-            document.getElementById('recordButton').classList.add('d-none');
-            document.getElementById('stopButton').classList.remove('d-none');
-            document.getElementById('recordingStatus').classList.remove('d-none');
-            
-            recordingTimer = setInterval(updateRecordingTime, 1000);
-        });
-}
-
-function stopRecording() {
-    recorder.stopRecording(function() {
-        audio = recorder.getBlob();
-        document.getElementById('audioPlayer').src = URL.createObjectURL(audio);
-        
-        document.getElementById('stopButton').classList.add('d-none');
-        document.getElementById('recordingStatus').classList.add('d-none');
-        document.getElementById('audioPlayback').classList.remove('d-none');
-        document.getElementById('analyzeButton').classList.remove('d-none');
-        
-        clearInterval(recordingTimer);
-    });
-}
-
-function analyzeVoice() {
-    let formData = new FormData();
-    formData.append('audio_data', audio, 'recorded_audio.webm');
-    
-    fetch("{% url 'loading' %}", {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': "{{ csrf_token }}"
-        }
-    }).then(response => {
-        if (response.ok) {
-            window.location.href = "{% url 'loading' %}";
-        }
-    });
-}
-
-function updateRecordingTime() {
-    recordingTime++;
-    let minutes = Math.floor(recordingTime / 60);
-    let seconds = recordingTime % 60;
-    document.getElementById('recordingTime').textContent = 
-        (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-}
-
 // 네비게이션 바 스크롤 효과
 window.addEventListener('scroll', function() {
     var navbar = document.querySelector('.navbar');
@@ -143,10 +149,133 @@ window.addEventListener('scroll', function() {
 window.addEventListener('load', function() {
     document.body.classList.add('loaded');
 });
+
+// 음계 입력 처리
+function validateAndFormatNote(input, minNote, maxNote, errorElement) {
+    const notePattern = /^[a-gA-G][1-7]$/;
+    let value = input.value.toUpperCase();
+    
+    if (notePattern.test(value)) {
+        // 유효한 음계 범위 확인
+        const note = value.charAt(0);
+        const octave = parseInt(value.charAt(1));
+        
+        // minNote와 maxNote의 범위 내에 있는지 확인
+        const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        const minNoteIndex = notes.indexOf(minNote.charAt(0));
+        const maxNoteIndex = notes.indexOf(maxNote.charAt(0));
+        const minOctave = parseInt(minNote.charAt(1));
+        const maxOctave = parseInt(maxNote.charAt(1));
+        const currentNoteIndex = notes.indexOf(note);
+        
+        const isValid = (octave > minOctave || (octave === minOctave && currentNoteIndex >= minNoteIndex)) &&
+                       (octave < maxOctave || (octave === maxOctave && currentNoteIndex <= maxNoteIndex));
+        
+        if (isValid) {
+            input.value = value;
+            input.classList.remove('is-invalid');
+            errorElement.style.display = 'none';
+            return true;
+        }
+    }
+    
+    input.classList.add('is-invalid');
+    errorElement.style.display = 'block';
+    return false;
+}
+
+// 최저음 입력 처리
+document.getElementById('lowestNote').addEventListener('input', function() {
+    validateAndFormatNote(this, 'E1', 'G4', document.getElementById('lowestNoteError'));
+});
+
+// 최고음 입력 처리
+document.getElementById('highestNote').addEventListener('input', function() {
+    validateAndFormatNote(this, 'C4', 'E7', document.getElementById('highestNoteError'));
+});
+
+// 검색 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('songSearchForm');
+    const searchResult = document.getElementById('searchResult');
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const songTitle = document.getElementById('songTitle').value;
+        const userLowest = document.getElementById('lowestNote').value;
+        const userHighest = document.getElementById('highestNote').value;
+        
+        if (!userLowest || !userHighest) {
+            alert('최저음과 최고음을 먼저 입력해주세요.');
+            return;
+        }
+        
+        fetch('/search_song/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify({
+                song_title: songTitle,
+                user_lowest: userLowest,
+                user_highest: userHighest
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('resultTitle').textContent = data.data.title;
+                document.getElementById('resultArtist').textContent = data.data.artist;
+                document.getElementById('resultOriginalKey').textContent = data.data.original_range;
+                document.getElementById('resultRecommendedKey').textContent = data.data.adjustment;
+                
+                // 프로그레스 바 업데이트
+                updateProgressBar(data.data.compatibility);
+                
+                searchResult.style.display = 'block';
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('검색 중 오류가 발생했습니다.');
+        });
+    });
+});
+
+function updateProgressBar(compatibility) {
+    const progressBar = document.querySelector('.progress-bar');
+    const compatibilityText = document.getElementById('compatibilityText');
+    
+    progressBar.style.width = '0%';
+    compatibilityText.textContent = '0';
+    
+    setTimeout(() => {
+        progressBar.style.width = compatibility + '%';
+        
+        let currentValue = 0;
+        const duration = 1500;
+        const interval = 20;
+        const increment = compatibility / (duration / interval);
+        
+        const updateCounter = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= compatibility) {
+                currentValue = compatibility;
+                clearInterval(updateCounter);
+            }
+            compatibilityText.textContent = Math.round(currentValue);
+        }, interval);
+    }, 300);
+}
 </script>
 
 <style>
-    /* 페이지 로드 애니메이션 */
+    /* 기존 스타일 유지 */
     body {
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
@@ -155,11 +284,10 @@ window.addEventListener('load', function() {
         opacity: 1;
     }
 
-    /* 히어로 섹션 전체 화면 설정 */
     .hero-section {
         min-height: 100vh;
         background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        padding: 300px 0; /* 네비게이션 바 높이를 고려한 상단 패딩 */
+        padding: 200px 0;
     }
 
     .hero-title {
@@ -172,36 +300,152 @@ window.addEventListener('load', function() {
         margin-bottom: 2rem;
     }
 
-    #controls .btn {
-        font-size: 1.2rem;
-        padding: 0.75rem 1.5rem;
-    }
-
-    /* 카드 스타일 */
     .card {
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         background-color: rgba(255, 255, 255, 0.05);
         border: none;
+        padding: 1rem;
     }
+    
     .card:hover {
         transform: translateY(-10px);
         box-shadow: 0 15px 30px rgba(0,0,0,0.2);
     }
 
-    /* 버튼 호버 효과 */
-    .btn {
-        transition: all 0.3s ease-in-out;
-    }
-    .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    /* 노래 검색 결과 스타일 */
+    .result-info {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
     }
 
-    /* 특징 아이콘 스타일 */
+    .result-label {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    .progress {
+        height: 8px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        margin: 0.5rem 0;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 4px;
+        transition: width 1.5s ease-in-out;
+    }
+
+    .compatibility-section p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* 입력 필드 스타일 */
+    .note-input .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .note-input .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+    }
+
+    .note-input .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .invalid-feedback {
+        display: none;
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
     .feature-icon {
         font-size: 3rem;
         color: var(--primary-color);
         margin-bottom: 1.5rem;
+    }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .video-container iframe {
+        border-radius: 10px;
+    }
+
+    /* 검색 입력 스타일 수정 */
+    #songTitle.form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    #songTitle.form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+    }
+
+    #songTitle.form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* 검색 결과 텍스트 스타일 */
+    #searchResult {
+        color: white;
+    }
+
+    .compatibility-section .progress {
+        background-color: rgba(255, 255, 255, 0.1);
+        height: 8px;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+    }
+
+    .compatibility-section .progress-bar {
+        background-color: var(--primary-color);
+        border-radius: 4px;
+    }
+
+    /* 반응형 조정 */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .card {
+            margin-bottom: 2rem;
+        }
+
+        .note-input .form-control,
+        #songTitle.form-control {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}

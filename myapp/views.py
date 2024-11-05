@@ -3,6 +3,11 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import time  # 임시로 분석 시간을 시뮬레이션하기 위해 사용
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Song
+from .keyshiftcalculator import KeyShiftCalculator, get_adjustment_message
+import json
 
 def home(request):
     return render(request, 'myapp/home.html')
@@ -64,3 +69,43 @@ def mypage(request):
         'voice_analyses': voice_analyses,
         'song_searches': song_searches
     })
+
+
+
+
+def search_song(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        song_title = data.get('song_title')
+        user_lowest = data.get('user_lowest')  # 사용자가 입력한 최저음
+        user_highest = data.get('user_highest')  # 사용자가 입력한 최고음
+        
+        try:
+            song = Song.objects.get(title__icontains=song_title)
+            calculator = KeyShiftCalculator()
+            
+            # 키 조정값 계산
+            key_shift, octave_shift = calculator.calculate_key_shift(
+                (song.lowest_note, song.highest_note),
+                (user_lowest, user_highest)
+            )
+            
+            adjustment_message = get_adjustment_message(key_shift, octave_shift)
+            
+            return JsonResponse({
+                'status': 'success',
+                'data': {
+                    'title': song.title,
+                    'artist': song.artist,
+                    'original_range': f"{song.lowest_note}-{song.highest_note}",
+                    'adjustment': adjustment_message,
+                    'compatibility': 85  # 이 값은 실제 계산 로직으로 대체 필요
+                }
+            })
+        except Song.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': '노래를 찾을 수 없습니다.'
+            })
+    
+    return JsonResponse({'status': 'error', 'message': '잘못된 요청입니다.'})
