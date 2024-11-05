@@ -81,16 +81,19 @@
                         <i class="fas fa-music feature-icon"></i>
                         <h5 class="card-title mb-3">노래방 키 찾기</h5>
                         <p class="card-text mb-4">노래제목 입력 후 노래방 키 확인! (ex. 밤편지)</p>
-                        
+
                         <!-- 노래 검색 폼 -->
                         <form class="search-form mb-4" id="songSearchForm" method="post">
                             {% csrf_token %}
-                            <div class="note-input mb-3">
+                            <div class="note-input mb-3 d-flex align-items-center">
                                 <input type="text" 
-                                       class="form-control form-control-lg text-center"
+                                       class="form-control form-control-lg text-center me-2"
                                        id="songTitle" 
                                        name="song_title"
                                        placeholder="노래 제목을 입력하세요">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
                         </form>
 
@@ -244,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('resultTitle').textContent = data.data.title;
                 document.getElementById('resultArtist').textContent = data.data.artist;
                 document.getElementById('resultOriginalKey').textContent = data.data.original_range;
+                document.getElementById('resultRecommendedKey').textContent = data.data.adjustment;  // 이 부분 확인
+
                 
                 // 프로그레스바 업데이트
                 updateProgressBar(data.data.compatibility);
@@ -409,6 +414,7 @@ function updateProgressBar(compatibility) {
     }
 
     /* 검색 입력 스타일 수정 */
+/* 검색 입력 스타일 수정 */
     #songTitle.form-control {
         background-color: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -416,7 +422,35 @@ function updateProgressBar(compatibility) {
         font-size: 1.1rem;
         border-radius: 8px;
         padding: 0.8rem;
-        margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    .note-input {
+        gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .note-input {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-primary {
+            width: 100%;
+        }
     }
 
     #songTitle.form-control:focus {

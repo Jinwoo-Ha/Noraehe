@@ -94,12 +94,17 @@ def search_song(request):
                 
                 compatibility_score = compatibility_calculator.calculate_compatibility()
                 
+                # 키 조정값 계산도 함께 가져오기
+                key_shift, octave_shift = compatibility_calculator.key_shift, compatibility_calculator.octave_shift
+                adjustment_message = get_adjustment_message(key_shift, octave_shift)
+                
                 return JsonResponse({
                     'status': 'success',
                     'data': {
                         'title': song.title,
                         'artist': song.artist,
                         'original_range': f"{song.lowest_note}-{song.highest_note}",
+                        'adjustment': adjustment_message,  # 이 부분이 추가되어야 함
                         'compatibility': compatibility_score
                     }
                 })
