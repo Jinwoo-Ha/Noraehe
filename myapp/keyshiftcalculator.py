@@ -127,3 +127,54 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+class SongCompatibilityCalculator:
+    def __init__(self, song_range, user_range):
+        self.song_range = song_range
+        self.user_range = user_range
+        self.calculator = KeyShiftCalculator()
+        self.key_shift, self.octave_shift = self.calculator.calculate_key_shift(song_range, user_range)
+
+    def calculate_compatibility(self):
+        """노래 적합도를 계산하는 메서드"""
+        base_score = 100
+        penalties = 0
+        
+        # 1. 키 이동에 따른 감점
+        key_shift_penalty = abs(self.key_shift) * 5  # 키 변경 1단계당 5점 감점
+        penalties += key_shift_penalty
+        
+        # 2. 옥타브 이동에 따른 감점
+        octave_penalty = abs(self.octave_shift) * 15  # 옥타브 변경 1단계당 15점 감점
+        penalties += octave_penalty
+        
+        # 3. 음역대 범위 차이에 따른 감점
+        song_range_midi = [self.calculator.note_str_to_midi(note) for note in self.song_range]
+        user_range_midi = [self.calculator.note_str_to_midi(note) for note in self.user_range]
+        
+        song_range_size = song_range_midi[1] - song_range_midi[0]
+        user_range_size = user_range_midi[1] - user_range_midi[0]
+        
+        range_difference = abs(song_range_size - user_range_size)
+        range_penalty = range_difference * 2  # 음역대 차이 1단계당 2점 감점
+        penalties += range_penalty
+        
+        # 최종 점수 계산 (최소 0점, 최대 100점)
+        final_score = max(0, min(100, base_score - penalties))
+        
+        return round(final_score)
+
+    def get_compatibility_message(self):
+        """적합도 점수에 따른 설명 메시지 반환"""
+        score = self.calculate_compatibility()
+        
+        if score >= 90:
+            return "이 노래는 당신의 음역대에 매우 적합합니다!"
+        elif score >= 75:
+            return "이 노래는 당신의 음역대와 잘 맞습니다."
+        elif score >= 60:
+            return "약간의 조정이 필요하지만 부를 만합니다."
+        elif score >= 40:
+            return "다소 많은 조정이 필요한 노래입니다."
+        else:
+            return "이 노래는 당신의 음역대와 차이가 큽니다."

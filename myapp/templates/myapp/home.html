@@ -195,6 +195,7 @@ document.getElementById('highestNote').addEventListener('input', function() {
 });
 
 // 검색 처리
+// 검색 처리
 document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('songSearchForm');
     const searchResult = document.getElementById('searchResult');
@@ -210,13 +211,17 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('최저음과 최고음을 먼저 입력해주세요.');
             return;
         }
+
+        // 로딩 표시 추가
+        const submitButton = this.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
         
         fetch('/search_song/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             },
             body: JSON.stringify({
                 song_title: songTitle,
@@ -224,28 +229,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 user_highest: userHighest
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+            
             if (data.status === 'success') {
                 document.getElementById('resultTitle').textContent = data.data.title;
                 document.getElementById('resultArtist').textContent = data.data.artist;
                 document.getElementById('resultOriginalKey').textContent = data.data.original_range;
-                document.getElementById('resultRecommendedKey').textContent = data.data.adjustment;
                 
-                // 프로그레스 바 업데이트
+                // 프로그레스바 업데이트
                 updateProgressBar(data.data.compatibility);
                 
                 searchResult.style.display = 'block';
             } else {
-                alert(data.message);
+                alert(data.message || '검색 결과가 없습니다.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('검색 중 오류가 발생했습니다.');
+            alert('검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
         });
     });
 });
+
+// 프로그레스바 업데이트 함수는 동일하게 유지
 
 function updateProgressBar(compatibility) {
     const progressBar = document.querySelector('.progress-bar');
